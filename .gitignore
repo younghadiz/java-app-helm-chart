@@ -1,0 +1,15 @@
+.DS_Store
+.idea/
+.vscode/
+
+*.tgz
+charts/
+Chart.lock
+
+values.local.yaml
+values.production.yaml
+secrets.yaml
+secrets.*.yaml
+
+*.log
+tmp/

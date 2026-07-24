@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "java-app.fullname" . }}-config
+  labels:
+    {{- include "java-app.labels" . | nindent 4 }}
+data:
+  DB_SERVER: {{ required "config.databaseHost is required" .Values.config.databaseHost | quote }}
+  DB_NAME: {{ required "config.databaseName is required" .Values.config.databaseName | quote }}

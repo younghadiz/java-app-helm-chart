@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "java-app.fullname" . }}-test-connection"
+  labels:
+    {{- include "java-app.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+
+  containers:
+    - name: wget
+      image: busybox:1.36.1
+      command:
+        - wget
+      args:
+        - "--spider"
+        - "--timeout=10"
+        - "http://{{ include "java-app.fullname" . }}:{{ .Values.service.port }}/"

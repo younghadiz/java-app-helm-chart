@@ -1,0 +1,61 @@
+---
+replicaCount: 3
+
+image:
+  repository: docker.io/YOUR_DOCKERHUB_USERNAME/java-mysql-app
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: production-registry-credentials
+
+config:
+  databaseHost: production-mysql-primary.database.svc.cluster.local
+  databaseName: java_app_db
+
+secret:
+  create: false
+  databaseUsername: ""
+  databasePassword: ""
+
+existingSecret: java-app-external-secret
+
+ingress:
+  enabled: true
+  className: nginx
+  host: app.example.com
+  path: /
+  pathType: Prefix
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  tls:
+    enabled: true
+    secretName: java-app-tls
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+autoscaling:
+  enabled: false
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - java-app
+          topologyKey: kubernetes.io/hostname
